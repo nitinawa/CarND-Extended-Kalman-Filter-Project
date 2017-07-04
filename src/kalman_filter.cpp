@@ -1,6 +1,7 @@
 #include "kalman_filter.h"
 //SN
 #include <iostream>
+#include <math.h>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -71,12 +72,7 @@ void KalmanFilter::Update(const VectorXd &z) {
   //SN??: Do we need to check if S is invertible?
   K = P_*H_.transpose()*S.inverse();
   x_ = x_ + K*y;
-  Eigen::MatrixXd I;
-  I = MatrixXd(4, 4);
-  I << 1.0, 0, 0, 0,
-    0, 1.0, 0, 0,
-    0, 0, 1.0, 0,
-    0, 0, 0, 1.0;
+  Eigen::MatrixXd I = MatrixXd::Identity(4, 4);
   P_ = (I - K*H_)*P_;
 }
 
@@ -103,8 +99,11 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   y(0) = z(0) - rho;
   y(1) = z(1) - atan2(py, px);
   // SN**: Need to check the range of argument of atan
-  while(y(1) < -3.14159265358979323846){
-      y(1) = y(1) + 2*3.14159265358979323846;
+  while(y(1) > M_PI) {
+      y(1) -= 2*M_PI;
+  }
+  while(y(1) < -M_PI) {
+      y(1) += 2*M_PI;
   }
   y(2) = z(2) - (px*vx + py*vy)/rho;
     
