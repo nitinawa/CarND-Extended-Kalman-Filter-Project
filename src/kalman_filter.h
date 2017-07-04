@@ -50,7 +50,8 @@ public:
    * using the process model
    * @param delta_T Time between k and k+1 in s
    */
-  void Predict();
+  //SN: Added the argument delta_T
+  void Predict(float delta_T);
 
   /**
    * Updates the state by using standard Kalman Filter equations
